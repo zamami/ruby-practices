@@ -1,15 +1,24 @@
-# 今月のカレンダーを表示するプログラムを書いてみよう。（コマンドラインのプログラムとして作ろう）
-
-# ヒント
-# Dateクラスを使えばカレンダーが作れる
-# まずは今月の1日と月末の日付と曜日を求める
-
-
-# とりあえず、今月のカレンダーを作ってみる。
+require "optparse"
 require "date"
 
-year = 2023
-month = 4
+opt = OptionParser.new
+option = {}
+opt.on( "-m ARG", desc = "set month variable" ){ |m| option[:m] = m }
+opt.on( "-y ARG", desc = "set year variable" ){ |y| option[:y] = y }
+opt.parse(ARGV)
+
+if option[:m] != nil
+  month = option[:m].to_i
+else
+  month = Date.today.month
+end
+
+if option[:y] != nil
+    year = option[:y].to_i
+  else
+    year = Date.today.year
+end
+
 first_date = Date.new(year, month, 1)
 last_date = Date.new(year, month, -1)
 range_days = (first_date..last_date)
@@ -23,13 +32,3 @@ print range_day.day.to_s.rjust(2," ") + " "
 puts "\n" if range_day.wday == 6
 
 }
-# binding.irb
-
-
-# 「考えたこと」
-# wdayを使って曜日の間隔を数字で指定して、
-# その分スペースで移動させる。
-# もし、土曜日が1日ならその分スペースで移動させる条件分岐を書く。
-# それ以外はスペースをゼロにして詰めて表示していく。
-# text.ljust(20,"1234567890")
-
