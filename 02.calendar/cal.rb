@@ -8,41 +8,23 @@
 # とりあえず、今月のカレンダーを作ってみる。
 require "date"
 
-date1 = Date.new(2023, 4, 1)
-date2 = Date.new(2023, 4, -1)
-first_day = date1.wday.to_s
-month_days = (date1..date2)
-
-puts "       4月 2023        "
-puts "日 月 火 水 木 金 土"
-puts ""
-month_days.each{|month_day|
+year = 2023
+month = 4
+first_date = Date.new(year, month, 1)
+last_date = Date.new(year, month, -1)
+range_days = (first_date..last_date)
 space  = "   "
-print space * month_day[0].wday if month_day == 1
-print month_day.day.to_s.rjust(2," ") + " "
-puts "" if month_day.wday == 6
+
+puts "       #{month}月 #{year}        "
+puts "日 月 火 水 木 金 土"
+range_days.each{|range_day|
+print space * range_day.wday if range_day.day == 1
+print range_day.day.to_s.rjust(2," ") + " "
+puts "\n" if range_day.wday == 6
 
 }
-binding.irb
+# binding.irb
 
-
-# case first_day
-# when "0" then
-#     print first_day
-#     print month_period[1..5].to_s.rjust(18," ")
-# when "1" then
-#     print
-# when "2" then
-#     print
-# when "3" then
-#     print
-# when "4" then
-#     print
-# when "5" then
-#     print
-# when "6" then
-#     print
-# end
 
 # 「考えたこと」
 # wdayを使って曜日の間隔を数字で指定して、
