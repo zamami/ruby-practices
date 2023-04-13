@@ -16,8 +16,8 @@ puts "日 月 火 水 木 金 土"
 first_date = Date.new(year, month, 1)
 print "   " * first_date.wday
 last_date = Date.new(year, month, -1)
-date_range = (first_date..last_date)
+date_range = first_date..last_date
 date_range.each do |date|
-  print date.day.to_s.rjust(2," ") + " "
-  puts "\n" if date.saturday?
+  print date.day.to_s.rjust(2, " ") + " "
+  print "\n" if date.saturday?
 end
