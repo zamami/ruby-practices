@@ -1,4 +1,4 @@
-# !/usr/bin/env ruby
+# frozen_string_literal: true
 
 score = ARGV[0]
 scores = score.split(',')
@@ -6,16 +6,16 @@ scores = score.split(',')
 # 数字に変換
 shots = []
 scores.each do |s|
-  if s == 'X' # strike
-    shots << 10
-  else
-    shots << s.to_i
-  end
+  shots << if s == 'X'
+             10
+           else
+             s.to_i
+           end
 end
 
 point = 0
 index = 0
-10.times do |frame|
+10.times do |_frame|
   if shots[index] == 10 # ストライクの時
     point += shots[index..index + 2].sum
     index += 1
