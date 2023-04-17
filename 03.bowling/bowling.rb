@@ -22,7 +22,7 @@ index = 0
   elsif shots[index..index + 1].sum == 10 # スペアの時
     point += shots[index..index + 2].sum
     index += 2
-  elsif shots[index..index + 1].sum < 10 # ストライクとスペア以外
+  else
     point += shots[index..index + 1].sum
     index += 2
   end
