@@ -7,7 +7,12 @@ input = ARGV
 options = ARGV.getopts('alr')
 
 # まずはディレクトリの中身を配列に格納
-files = Dir.foreach('.').select { |file| file.start_with?(/\w/) }
+# オプションに'a’があれば全取得、なければ隠しフォルダは除く
+if options['a']
+  files = Dir.foreach('.')
+else
+  files = Dir.foreach('.').select { |file| file.start_with?(/\w/) }
+end
 
 # lsコマンドの見た目を整えるため、配列の中から一番文字数が大きものを見つける。
 files_max_size = files.max_by(&:length).size + 1
@@ -24,6 +29,4 @@ colum_resize_files.each do |file| # transposeを使うために足りない要�
   (tolerance - file.size).times { file << nil }
 end
 
-colum_resize_files.transpose.each do |file|
-  puts file.join
-end
+colum_resize_files.transpose.each { |file| puts file.join }
