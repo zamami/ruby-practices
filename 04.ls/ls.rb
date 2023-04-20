@@ -8,11 +8,11 @@ options = ARGV.getopts('alr')
 
 # まずはディレクトリの中身を配列に格納
 # オプションに'a’があれば全取得、なければ隠しフォルダは除く
-if options['a']
-  files = Dir.foreach('.')
-else
-  files = Dir.foreach('.').select { |file| file.start_with?(/\w/) }
-end
+files = if options['a']
+          Dir.foreach('.')
+        else
+          Dir.foreach('.').select { |file| file.start_with?(/\w/) }
+        end
 
 # lsコマンドの見た目を整えるため、配列の中から一番文字数が大きものを見つける。
 files_max_size = files.max_by(&:length).size + 1
