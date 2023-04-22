@@ -16,13 +16,13 @@ end
 index = 0
 point = 10.times.sum do |_frame|
   if shots[index] == 10 # ストライクの時
-    point = shots[index..index + 2]
+    frame_point = shots[index..index + 2]
     index += 1
   elsif shots[index..index + 1].sum == 10 # スペアの時
-    point = shots[index..index + 2]
+    frame_point = shots[index..index + 2]
     index += 2
   else
-    point = shots[index..index + 1]
+    frame_point = shots[index..index + 1]
     index += 2
   end
   point.sum
