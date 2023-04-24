@@ -25,7 +25,7 @@ point = 10.times.sum do |_frame|
     frame_point = shots[index..index + 1]
     index += 2
   end
-  point.sum
+  frame_point.sum
 end
 
 p point
