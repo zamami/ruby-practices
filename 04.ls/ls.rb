@@ -11,7 +11,8 @@ options = ARGV.getopts('alr')
 args = ['*']
 args << File::FNM_DOTMATCH if options.fetch('a', false)
 files = Dir.glob(*args)
-
+# -rオプションに対応
+files = files.reverse if options['r']
 # lsコマンドの見た目を整えるため、配列の中から一番文字数が大きものを見つける。
 files_max_size = files.max_by(&:length).size + 1
 resize_files = files.map { |file| file.ljust(files_max_size) }
