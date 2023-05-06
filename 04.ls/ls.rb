@@ -18,56 +18,54 @@ files = files.reverse if options['r']
 # -lオプションに対応。
 total = []
 hash_files = []
-files.each do |file|
-  stat = File.lstat(file) # まずはディレクトリの中の要素をfile::lstatに通す
-  ftype = if stat.ftype == 'directory' # ファイルタイプを取得
-            'd'
-          elsif stat.ftype == 'file'
-            '-'
-          else
-            'l'
-          end
-  get_file_mode_num = stat.mode.to_s(8).split('').slice(-3..-1) # 下３桁を取得。
-  change_file_mode_num = get_file_mode_num.map do |num| # 下３桁を定義してjoinでくっつける
-      case num
-        when '7'
-          "rwx"
-        when '6'
-          'rw-'
-        when '5'
-          'r-x'
-        when '4'
-          'r--'
-        when '3'
-          '-wx'
-        when '2'
-          '-w-'
-        when '1'
-          '--x'
-        when '0'
-          '---'
-      end
+
+def get_ftype(ftype)
+  if ftype == 'directory'
+    'd'
+  elsif ftype == 'file'
+    '-'
+  else
+    'l'
   end
-  file_mode = change_file_mode_num.join
-  file_type_mode = ftype + file_mode + '  ' # ファイルタイプとファイルモードを一つにする
+end
+
+def get_file_mode(stat_mode)
+  get_file_mode_num = stat_mode.to_s(8).split('').slice(-3..-1) # 下３桁を取得。
+  file_mode = { '7' => 'rwx',
+                '6' => 'rwx',
+                '5' => 'r-x',
+                '4' => 'r--',
+                '3' => '-wx',
+                '2' => '-w-',
+                '1' => '--x',
+                '0' => '---' }
+  change_file_mode_num = get_file_mode_num.map { |num| file_mode[num] }
+  change_file_mode_num.join
+end
+
+files.each do |file|
+  stat = File.lstat(file) # ディレクトリの中の要素をfile::lstatに通す
+  ftype = get_ftype(stat.ftype) # ファイルタイプを取得
+  file_mode = get_file_mode(stat.mode) # 下３桁を定義してjoinでくっつける
+  file_type_mode = "#{ftype}#{file_mode}  " # ファイルタイプとファイルモードを一つにする
   file_nlink = stat.nlink.to_s # リンク数を取得
-  owner_name = Etc.getpwuid(stat.uid).name + ' ' # オーナー名を取得
+  owner_name = "#{Etc.getpwuid(stat.uid).name} " # オーナー名を取得
   group_name = Etc.getgrgid(stat.gid).name # グループ名を取得
   file_size = stat.size.to_s.rjust(5) # ファイルサイズを取得
   file_time = stat.atime.strftime('%_m %_d %R') # ファイルの作成時刻を取得
-  file_path = '-> ' + File.readlink(file) if stat.symlink? # シンボリックファイルのリンク先を取得
+  file_path = "-> #{File.readlink(file)}" if stat.symlink? # シンボリックファイルのリンク先を取得
   total << stat.blocks # ブロックサイズを取得
-  file_hash = {file_type_mode: "#{file_type_mode}",
-               file_nlink: "#{file_nlink}",
-               owner_name: "#{owner_name}",
-               group_name: "#{group_name}",
-               file_size: "#{file_size}",
-               file_time: "#{file_time}",
-               file_name: file,
-               file_path: "#{file_path}"
-              }
+  file_hash = { file_type_mode: file_type_mode.to_s,
+                file_nlink: file_nlink.to_s,
+                owner_name: owner_name.to_s,
+                group_name: group_name.to_s,
+                file_size: file_size.to_s,
+                file_time: file_time.to_s,
+                file_name: file,
+                file_path: file_path.to_s }
   hash_files << file_hash.values.join(' ')
 end
+
 puts "total #{total.sum}"
 hash_files.each { |file| puts file }
 
