@@ -47,14 +47,14 @@ def set_list_option
     file_time = stat.atime.strftime('%_m %_d %R') # ファイルの作成時刻を取得
     file_path = "-> #{File.readlink(file)}" if stat.symlink? # シンボリックファイルのリンク先を取得
     stat_blocks_total << stat.blocks # ブロックサイズを取得
-    file_value = [file_type_mode.to_s,
-                  file_nlink.to_s,
-                  owner_name.to_s,
-                  group_name.to_s,
-                  file_size.to_s,
-                  file_time.to_s,
+    file_value = [file_type_mode,
+                  file_nlink,
+                  owner_name,
+                  group_name,
+                  file_size,
+                  file_time,
                   file,
-                  file_path.to_s]
+                  file_path]
     file_value.join(' ')
   end
 
