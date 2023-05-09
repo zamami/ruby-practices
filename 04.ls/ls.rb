@@ -11,15 +11,14 @@ options = ARGV.getopts('alr')
 # オプションに'a’があれば全取得、なければ隠しフォルダは除く
 args = ['*']
 args << File::FNM_DOTMATCH if options.fetch('a', false)
-files = Dir.glob(*args)
+FILES = Dir.glob(*args)
 # -rオプションに対応
-files = files.reverse if options['r']
+FILES = FILES.reverse if options['r']
 
 # -lオプションに対応。
-if options['l']
-  total = []
-  hash_files = []
-
+FILE_MODE = { '7' => 'rwx', '6' => 'rwx', '5' => 'r-x', '4' => 'r--', '3' => '-wx', '2' => '-w-', '1' => '--x', '0' => '---' }.freeze
+def set_list_option
+  stat_blocks_total = []
   def get_ftype(ftype)
     if ftype == 'directory'
       'd'
@@ -32,19 +31,11 @@ if options['l']
 
   def get_file_mode(stat_mode)
     get_file_mode_num = stat_mode.to_s(8).split('').slice(-3..-1) # 下３桁を取得。
-    file_mode = { '7' => 'rwx',
-                  '6' => 'rwx',
-                  '5' => 'r-x',
-                  '4' => 'r--',
-                  '3' => '-wx',
-                  '2' => '-w-',
-                  '1' => '--x',
-                  '0' => '---' }
-    change_file_mode_num = get_file_mode_num.map { |num| file_mode[num] }
+    change_file_mode_num = get_file_mode_num.map { |num| FILE_MODE[num] }
     change_file_mode_num.join
   end
 
-  files.each do |file|
+  file_values = FILES.map do |file|
     stat = File.lstat(file) # ディレクトリの中の要素をfile::lstatに通す
     ftype = get_ftype(stat.ftype) # ファイルタイプを取得
     file_mode = get_file_mode(stat.mode) # 下３桁を定義してjoinでくっつける
@@ -55,25 +46,26 @@ if options['l']
     file_size = stat.size.to_s.rjust(5) # ファイルサイズを取得
     file_time = stat.atime.strftime('%_m %_d %R') # ファイルの作成時刻を取得
     file_path = "-> #{File.readlink(file)}" if stat.symlink? # シンボリックファイルのリンク先を取得
-    total << stat.blocks # ブロックサイズを取得
-    file_hash = { file_type_mode: file_type_mode.to_s,
-                  file_nlink: file_nlink.to_s,
-                  owner_name: owner_name.to_s,
-                  group_name: group_name.to_s,
-                  file_size: file_size.to_s,
-                  file_time: file_time.to_s,
-                  file_name: file,
-                  file_path: file_path.to_s }
-    hash_files << file_hash.values.join(' ')
+    stat_blocks_total << stat.blocks # ブロックサイズを取得
+    file_value = [file_type_mode.to_s,
+                  file_nlink.to_s,
+                  owner_name.to_s,
+                  group_name.to_s,
+                  file_size.to_s,
+                  file_time.to_s,
+                  file,
+                  file_path.to_s]
+    file_value.join(' ')
   end
 
-  puts "total #{total.sum}"
-  hash_files.each { |file| puts file }
+  puts "total #{stat_blocks_total.sum}"
+  file_values.each { |file| puts file }
+end
 
-else
-  # ls,ls -arコマンドの見た目を整えるため、配列の中から一番文字数が大きものを見つける。
-  files_max_size = files.max_by(&:length).size + 1
-  resize_files = files.map { |file| file.ljust(files_max_size) }
+# appearance(見た目)
+def set_appearance
+  files_max_size = FILES.max_by(&:length).size + 1 # ls,ls -arコマンドの見た目を整えるため、配列の中から一番文字数が大きものを見つける。
+  resize_files = FILES.map { |file| file.ljust(files_max_size) }
 
   column = 3 # column: "列数"、tolerance: "公差"
   def get_tolerance(resize_files, column)
@@ -87,5 +79,10 @@ else
   end
 
   colum_resize_files.transpose.each { |file| puts file.join }
+end
 
+if options['l']
+  set_list_option
+else
+  set_appearance
 end
