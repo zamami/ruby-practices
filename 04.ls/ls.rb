@@ -35,28 +35,25 @@ def get_file_mode(stat_mode)
   change_file_mode_num.join
 end
 
-stat_blocks_total = []
-file_values = FILES.map do |file|
-  stat = File.lstat(file) # ディレクトリの中の要素をfile::lstatに通す
-  ftype = get_ftype(stat.ftype) # ファイルタイプを取得
-  file_mode = get_file_mode(stat.mode) # 下３桁を定義してjoinでくっつける
-  file_type_mode = "#{ftype}#{file_mode}  " # ファイルタイプとファイルモードを一つにする
-  file_nlink = stat.nlink.to_s # リンク数を取得
-  owner_name = "#{Etc.getpwuid(stat.uid).name} " # オーナー名を取得
-  group_name = Etc.getgrgid(stat.gid).name # グループ名を取得
-  file_size = stat.size.to_s.rjust(5) # ファイルサイズを取得
-  file_time = stat.atime.strftime('%_m %_d %R') # ファイルの作成時刻を取得
-  file_path = "-> #{File.readlink(file)}" if stat.symlink? # シンボリックファイルのリンク先を取得
-  stat_blocks_total << stat.blocks # ブロックサイズを取得
-  file_value = [file_type_mode,
-                file_nlink,
-                owner_name,
-                group_name,
-                file_size,
-                file_time,
-                file,
-                file_path]
-  file_value.join(' ')
+def ls_list_files
+  stat_blocks_total = []
+  file_values = FILES.map do |file|
+    stat = File.lstat(file) # ディレクトリの中の要素をfile::lstatに通す
+    ftype = get_ftype(stat.ftype) # ファイルタイプを取得
+    file_mode = get_file_mode(stat.mode) # 下３桁を定義してjoinでくっつける
+    file_type_mode = "#{ftype}#{file_mode}  " # ファイルタイプとファイルモードを一つにする
+    file_nlink = stat.nlink.to_s # リンク数を取得
+    owner_name = "#{Etc.getpwuid(stat.uid).name} " # オーナー名を取得
+    group_name = Etc.getgrgid(stat.gid).name # グループ名を取得
+    file_size = stat.size.to_s.rjust(5) # ファイルサイズを取得
+    file_time = stat.atime.strftime('%_m %_d %R') # ファイルの作成時刻を取得
+    file_path = "-> #{File.readlink(file)}" if stat.symlink? # シンボリックファイルのリンク先を取得
+    stat_blocks_total << stat.blocks # ブロックサイズを取得
+    file_value = [file_type_mode, file_nlink, owner_name, group_name, file_size, file_time, file, file_path]
+    file_value.join(' ')
+  end
+  puts "total #{stat_blocks_total.sum}"
+  file_values.each { |file| puts file }
 end
 
 # -lオプションが含まれていない時
@@ -72,8 +69,7 @@ def format_appearance
 end
 
 if options['l']
-  puts "total #{stat_blocks_total.sum}"
-  file_values.each { |file| puts file }
+  ls_list_files
 else
   format_appearance
 end
