@@ -49,8 +49,7 @@ def ls_list_files
     file_time = stat.atime.strftime('%_m %_d %R') # ファイルの作成時刻を取得
     file_path = "-> #{File.readlink(file)}" if stat.symlink? # シンボリックファイルのリンク先を取得
     stat_blocks_total << stat.blocks # ブロックサイズを取得
-    file_value = [file_type_mode, file_nlink, owner_name, group_name, file_size, file_time, file, file_path]
-    file_value.join(' ')
+    [file_type_mode, file_nlink, owner_name, group_name, file_size, file_time, file, file_path].join(' ')
   end
   puts "total #{stat_blocks_total.sum}"
   file_values.each { |file| puts file }
@@ -68,8 +67,4 @@ def format_appearance
   add_nil_to_files.transpose.each { |file| puts file.join } # transposeを使うために足りない要素をnilで埋める。
 end
 
-if options['l']
-  ls_list_files
-else
-  format_appearance
-end
+options['l'] ? ls_list_files : format_appearance
