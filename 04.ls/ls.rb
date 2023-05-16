@@ -37,7 +37,7 @@ def get_file_mode(stat_mode)
   change_file_mode_num.join
 end
 
-def format_list_data_appearance
+def format_appearance_of_list_data
   stat_blocks_total = []
   files = reverse_discriminate
   file_values = files.map do |file|
@@ -58,7 +58,7 @@ def format_list_data_appearance
   file_values.each { |file| puts file }
 end
 
-def format_data_appearance
+def format_appearance_of_data
   files = reverse_discriminate
   files_max_size = files.max_by(&:length).size + 1 # ls,ls -arコマンドの見た目を整えるため、配列の中から一番文字数が大きものを見つける。
   resize_files = files.map { |file| file.ljust(files_max_size) }
@@ -68,4 +68,4 @@ def format_data_appearance
   slice_files.each { |file| (tolerance - file.size).times { file << nil } }.transpose.each { |file| puts file.join } # transposeを使うために足りない要素をnilで埋める。
 end
 
-OPTIONS['l'] ? format_list_data_appearance : format_data_appearance
+OPTIONS['l'] ? format_appearance_of_list_data : format_appearance_of_data
