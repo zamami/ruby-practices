@@ -4,18 +4,20 @@
 require 'optparse'
 require 'etc'
 
-input = ARGV
-options = ARGV.getopts('alr')
-
-# まずはディレクトリの中身を配列に格納
-# オプションに'a’があれば全取得、なければ隠しフォルダは除く
-args = ['*']
-args << File::FNM_DOTMATCH if options.fetch('a', false)
+# ディレクトリの中身を配列に格納。オプションに'a’があれば全取得、なければ隠しフォルダは除く
+OPTIONS = ARGV.getopts('alr')
+def set_file_data
+  args = ['*']
+  args << File::FNM_DOTMATCH if OPTIONS.fetch('a', false)
+  Dir.glob(*args)
+end
 
 # -rオプションに対応
-reverse_order = options['r']
-files = Dir.glob(*args)
-FILES = reverse_order ? files.reverse : files
+def reverse_discriminate
+  reverse_order = OPTIONS['r']
+  files = set_file_data
+  reverse_order ? files.reverse : files
+end
 
 # -lオプションに対応。
 def get_ftype(ftype)
@@ -35,9 +37,10 @@ def get_file_mode(stat_mode)
   change_file_mode_num.join
 end
 
-def ls_list_files
+def format_list_data_appearance
   stat_blocks_total = []
-  file_values = FILES.map do |file|
+  files = reverse_discriminate
+  file_values = files.map do |file|
     stat = File.lstat(file) # ディレクトリの中の要素をfile::lstatに通す
     ftype = get_ftype(stat.ftype) # ファイルタイプを取得
     file_mode = get_file_mode(stat.mode) # 下３桁を定義してjoinでくっつける
@@ -55,16 +58,14 @@ def ls_list_files
   file_values.each { |file| puts file }
 end
 
-# -lオプションが含まれていない時
-files_max_size = FILES.max_by(&:length).size + 1 # ls,ls -arコマンドの見た目を整えるため、配列の中から一番文字数が大きものを見つける。
-RESIZE_FILES = FILES.map { |file| file.ljust(files_max_size) }
-# 見た目を整える
-def format_appearance
+def format_data_appearance
+  files = reverse_discriminate
+  files_max_size = files.max_by(&:length).size + 1 # ls,ls -arコマンドの見た目を整えるため、配列の中から一番文字数が大きものを見つける。
+  resize_files = files.map { |file| file.ljust(files_max_size) }
   column = 3 # column: "列数"、
-  tolerance = (RESIZE_FILES.size / column.to_f).ceil # tolerance: "公差"
-  slice_files = RESIZE_FILES.each_slice(tolerance).to_a
-  add_nil_to_files = slice_files.each { |file| (tolerance - file.size).times { file << nil } }
-  add_nil_to_files.transpose.each { |file| puts file.join } # transposeを使うために足りない要素をnilで埋める。
+  tolerance = (resize_files.size / column.to_f).ceil # tolerance: "公差"
+  slice_files = resize_files.each_slice(tolerance).to_a
+  slice_files.each { |file| (tolerance - file.size).times { file << nil } }.transpose.each { |file| puts file.join } # transposeを使うために足りない要素をnilで埋める。
 end
 
-options['l'] ? ls_list_files : format_appearance
+OPTIONS['l'] ? format_list_data_appearance : format_data_appearance
