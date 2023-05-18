@@ -62,7 +62,7 @@ def format_appearance_of_data
   files = reverse_discriminate
   files_max_size = files.max_by(&:length).size + 1 # ls,ls -arコマンドの見た目を整えるため、配列の中から一番文字数が大きものを見つける。
   resize_files = files.map { |file| file.ljust(files_max_size) }
-  column = 3 # column: "列数"、
+  column = 3 # column: "列数"
   tolerance = (resize_files.size / column.to_f).ceil # tolerance: "公差"
   slice_files = resize_files.each_slice(tolerance).to_a
   slice_files.each { |file| (tolerance - file.size).times { file << nil } }.transpose.each { |file| puts file.join } # transposeを使うために足りない要素をnilで埋める。
