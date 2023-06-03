@@ -2,29 +2,47 @@
 
 require 'optparse'
 
-def option_wc(file_path, options)
-  line_count = 0
-  word_count = 0
-  byte_count = 0
+files = ARGV
+options = ARGV.getopts('lcw')
 
-  File.open(file_path, 'r') do |file|
-    file.each_line do |line|
-      line_count += 1 if options['l']
-      word_count += line.split.size if options['w']
-      byte_count += line.bytesize if options['c']
+if options.value?(true)
+  total_line_count = 0
+  total_word_count = 0
+  total_byte_count = 0
+
+  files.each do |file_path|
+    File.open(file_path, 'r') do |file|
+      line_count = 0
+      word_count = 0
+      byte_count = 0
+      file.each_line do |line|
+        line_count += 1 if options['l']
+        word_count += line.split.size if options['w']
+        byte_count += line.bytesize if options['c']
+
+        total_line_count += 1
+        total_word_count += line.split.size
+        total_byte_count += line.bytesize
+      end
+      result = ''
+      result += line_count.to_s.rjust(8) if options['l']
+      result += word_count.to_s.rjust(8) if options['w']
+      result += byte_count.to_s.rjust(8) if options['c']
+      result += " #{file_path}"
+      puts result
     end
   end
 
-  result = ''
-  result += line_count.to_s.rjust(8) if options['l']
-  result += word_count.to_s.rjust(8) if options['w']
-  result += byte_count.to_s.rjust(8) if options['c']
-  result += " #{file_path}"
+  if files[1]
+    result = ''
+    result += total_line_count.to_s.rjust(8) if options['l']
+    result += total_word_count.to_s.rjust(8) if options['w']
+    result += total_byte_count.to_s.rjust(8) if options['c']
+    result += ' total'
+    puts result
+  end
 
-  puts result
-end
-
-def not_option_wc(files)
+else
   file = { line_count: 0, word_count: 0, file_size: 0 }
   total_file = { line_count: 0, word_count: 0, file_size: 0 }
   output_format = '%8d%8d%8d %s'
@@ -44,15 +62,3 @@ def not_option_wc(files)
   total_format = '%8d%8d%8d'
   puts "#{format(total_format, total_file[:line_count], total_file[:word_count], total_file[:file_size])} total" if files[1]
 end
-
-files = ARGV
-options = ARGV.getopts('lcw')
-
-if options.value?(true)
-  files.each do |file|
-    option_wc(file, options)
-  end
-else
-  not_option_wc(files)
-end
-
