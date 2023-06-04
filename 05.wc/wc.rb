@@ -41,8 +41,7 @@ if options.value?(true)
     result += ' total'
     puts result
   end
-
-else
+elsif files[0]
   file = { line_count: 0, word_count: 0, file_size: 0 }
   total_file = { line_count: 0, word_count: 0, file_size: 0 }
   output_format = '%8d%8d%8d %s'
@@ -61,4 +60,20 @@ else
 
   total_format = '%8d%8d%8d'
   puts "#{format(total_format, total_file[:line_count], total_file[:word_count], total_file[:file_size])} total" if files[1]
+
+else
+  text = $stdin.read
+  line_count = 0
+  word_count = 0
+  byte_count = 0
+  text.each_line do |line|
+    line_count += 1
+    word_count += line.split.size
+    byte_count += line.bytesize
+  end
+  result = ''
+  result += line_count.to_s.rjust(8)
+  result += word_count.to_s.rjust(8)
+  result += byte_count.to_s.rjust(8)
+  puts result
 end
