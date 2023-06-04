@@ -5,7 +5,16 @@ require 'optparse'
 files = ARGV
 options = ARGV.getopts('lcw')
 
-if options.value?(true)
+def option_wc_total(files, total_line_count, total_word_count, total_byte_count)
+  result = ''
+  result += total_line_count.to_s.rjust(8) if options['l']
+  result += total_word_count.to_s.rjust(8) if options['w']
+  result += total_byte_count.to_s.rjust(8) if options['c']
+  result += ' total'
+  puts result
+end
+
+def option_word_count(files, options)
   total_line_count = 0
   total_word_count = 0
   total_byte_count = 0
@@ -32,16 +41,10 @@ if options.value?(true)
       puts result
     end
   end
+  option_wc_total(files, total_line_count, total_word_count, total_byte_count) if files[1]
+end
 
-  if files[1]
-    result = ''
-    result += total_line_count.to_s.rjust(8) if options['l']
-    result += total_word_count.to_s.rjust(8) if options['w']
-    result += total_byte_count.to_s.rjust(8) if options['c']
-    result += ' total'
-    puts result
-  end
-elsif files[0]
+def word_count(files)
   file = { line_count: 0, word_count: 0, file_size: 0 }
   total_file = { line_count: 0, word_count: 0, file_size: 0 }
   output_format = '%8d%8d%8d %s'
@@ -60,8 +63,9 @@ elsif files[0]
 
   total_format = '%8d%8d%8d'
   puts "#{format(total_format, total_file[:line_count], total_file[:word_count], total_file[:file_size])} total" if files[1]
+end
 
-else
+def standard_input_word_count
   text = $stdin.read
   line_count = 0
   word_count = 0
@@ -76,4 +80,12 @@ else
   result += word_count.to_s.rjust(8)
   result += byte_count.to_s.rjust(8)
   puts result
+end
+
+if options.value?(true)
+  option_word_count(files, options)
+elsif files[0]
+  word_count(files)
+else
+  standard_input_word_count
 end
