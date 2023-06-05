@@ -64,25 +64,32 @@ def word_count(files)
   puts "#{format(total_format, total_file[:line_count], total_file[:word_count], total_file[:file_size])} total" if files.size > 1
 end
 
-def standard_input_word_count
+def standard_input_word_count(options)
   text = $stdin.read
-  line_count = text.lines.count
-  word_count = text.split.size
-  byte_count = text.bytesize
+  counts = { line_count: 0, word_count: 0, byte_count: 0 }
+  counts[:line_count] = text.lines.count
+  counts[:word_count] = text.split.size
+  counts[:byte_count] = text.bytesize
 
-  result = [
-    line_count.to_s.rjust(8),
-    word_count.to_s.rjust(8),
-    byte_count.to_s.rjust(8)
-  ].join
-
+  if options.value?(true)
+    result = ''
+    result += counts[:line_count].to_s.rjust(8) if options['l']
+    result += counts[:word_count].to_s.rjust(8) if options['w']
+    result += counts[:byte_count].to_s.rjust(8) if options['c']
+  else
+    result = [
+      counts[:line_count].to_s.rjust(8),
+      counts[:word_count].to_s.rjust(8),
+      counts[:byte_count].to_s.rjust(8)
+    ].join
+  end
   puts result
 end
 
-if options.value?(true)
+if options.value?(true) && files[0]
   option_word_count(files, options)
 elsif files[0]
   word_count(files)
 else
-  standard_input_word_count
+  standard_input_word_count(options)
 end
