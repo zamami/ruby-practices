@@ -5,7 +5,16 @@ require 'optparse'
 files = ARGV
 options = ARGV.getopts('lcw')
 
-def option_wc_total(options, counts)
+def option_wc_standard_output(options, counts, file_path)
+  result = ''
+  result += counts[:line_count].to_s.rjust(8) if options['l']
+  result += counts[:word_count].to_s.rjust(8) if options['w']
+  result += counts[:byte_count].to_s.rjust(8) if options['c']
+  result += " #{file_path}"
+  puts result
+end
+
+def option_wc_total_standard_output(options, counts)
   result = ''
   result += counts[:line_count].to_s.rjust(8) if options['l']
   result += counts[:word_count].to_s.rjust(8) if options['w']
@@ -16,7 +25,6 @@ end
 
 def option_word_count(files, options)
   total_counts = { line_count: 0, word_count: 0, byte_count: 0 }
-
   files.each do |file_path|
     counts = { line_count: 0, word_count: 0, byte_count: 0 }
     File.open(file_path, 'r') do |file|
@@ -24,22 +32,15 @@ def option_word_count(files, options)
         counts[:line_count] += 1 if options['l']
         counts[:word_count] += line.split.size if options['w']
         counts[:byte_count] += line.bytesize if options['c']
-
         total_counts[:line_count] += 1
         total_counts[:word_count] += line.split.size
         total_counts[:byte_count] += line.bytesize
       end
-
-      result = ''
-      result += counts[:line_count].to_s.rjust(8) if options['l']
-      result += counts[:word_count].to_s.rjust(8) if options['w']
-      result += counts[:byte_count].to_s.rjust(8) if options['c']
-      result += " #{file_path}"
-      puts result
+      option_wc_standard_output(options, counts, file_path)
     end
   end
 
-  option_wc_total(options, total_counts) if files.size > 1
+  option_wc_total_standard_output(options, total_counts) if files.size > 1
 end
 
 def word_count(files)
@@ -59,10 +60,8 @@ def word_count(files)
     total_file[:file_size] += file_size
   end
 
-  if files.size > 1
-    total_format = '%8d%8d%8d'
-    puts "#{format(total_format, total_file[:line_count], total_file[:word_count], total_file[:file_size])} total"
-  end
+  total_format = '%8d%8d%8d'
+  puts "#{format(total_format, total_file[:line_count], total_file[:word_count], total_file[:file_size])} total" if files.size > 1
 end
 
 def standard_input_word_count
