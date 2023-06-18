@@ -5,91 +5,39 @@ require 'optparse'
 files = ARGV
 options = ARGV.getopts('lcw')
 
-def option_wc_standard_output(options, counts, file_path)
-  result = ''
-  result += counts[:line_count].to_s.rjust(8) if options['l']
-  result += counts[:word_count].to_s.rjust(8) if options['w']
-  result += counts[:byte_count].to_s.rjust(8) if options['c']
-  result += " #{file_path}"
-  puts result
+def option_value?(options, option)
+  options[option] || !options.value?(true)
 end
 
-def option_wc_total_standard_output(options, counts)
+def print_counts(counts, options, path_or_total = '')
   result = ''
-  result += counts[:line_count].to_s.rjust(8) if options['l']
-  result += counts[:word_count].to_s.rjust(8) if options['w']
-  result += counts[:byte_count].to_s.rjust(8) if options['c']
-  result += ' total'
-  puts result
+  result += counts[:line_count].to_s.rjust(8) if option_value?(options, 'l')
+  result += counts[:word_count].to_s.rjust(8) if option_value?(options, 'w')
+  result += counts[:byte_count].to_s.rjust(8) if option_value?(options, 'c')
+  puts result + path_or_total
 end
 
-def option_word_count(files, options)
+if !files.empty? # 単数、複数ファイル
   total_counts = { line_count: 0, word_count: 0, byte_count: 0 }
   files.each do |file_path|
     counts = { line_count: 0, word_count: 0, byte_count: 0 }
     File.open(file_path, 'r') do |file|
       file.each_line do |line|
-        counts[:line_count] += 1 if options['l']
-        counts[:word_count] += line.split.size if options['w']
-        counts[:byte_count] += line.bytesize if options['c']
-        total_counts[:line_count] += 1
-        total_counts[:word_count] += line.split.size
-        total_counts[:byte_count] += line.bytesize
+        counts[:line_count] += 1
+        counts[:word_count] += line.split.size
+        counts[:byte_count] += line.bytesize
       end
-      option_wc_standard_output(options, counts, file_path)
     end
+    total_counts.transform_values!.with_index { |value, index| value + counts.values[index] }
+    print_counts(counts, options, " #{file_path}")
   end
-
-  option_wc_total_standard_output(options, total_counts) if files.size > 1
-end
-
-def word_count(files)
-  output_format = '%8d%8d%8d %s'
-  total_file = { line_count: 0, word_count: 0, file_size: 0 }
-
-  files.each do |file_path|
-    text = File.read(file_path)
-    line_count = text.count("\n")
-    word_count = text.split(/\s+/).size
-    file_size = text.bytesize
-
-    puts format(output_format, line_count, word_count, file_size, file_path)
-
-    total_file[:line_count] += line_count
-    total_file[:word_count] += word_count
-    total_file[:file_size] += file_size
-  end
-
-  total_format = '%8d%8d%8d'
-  puts "#{format(total_format, total_file[:line_count], total_file[:word_count], total_file[:file_size])} total" if files.size > 1
-end
-
-def standard_input_word_count(options)
+  print_counts(total_counts, options, ' total') if files.size > 1 # total表示
+else # 標準入力
   text = $stdin.read
-  counts = { line_count: 0, word_count: 0, byte_count: 0 }
-  counts[:line_count] = text.lines.count
-  counts[:word_count] = text.split.size
-  counts[:byte_count] = text.bytesize
-
-  if options.value?(true)
-    result = ''
-    result += counts[:line_count].to_s.rjust(8) if options['l']
-    result += counts[:word_count].to_s.rjust(8) if options['w']
-    result += counts[:byte_count].to_s.rjust(8) if options['c']
-  else
-    result = [
-      counts[:line_count].to_s.rjust(8),
-      counts[:word_count].to_s.rjust(8),
-      counts[:byte_count].to_s.rjust(8)
-    ].join
-  end
-  puts result
-end
-
-if options.value?(true) && files[0]
-  option_word_count(files, options)
-elsif files[0]
-  word_count(files)
-else
-  standard_input_word_count(options)
+  counts = {
+    line_count: text.lines.count,
+    word_count: text.split.size,
+    byte_count: text.bytesize
+  }
+  print_counts(counts, options)
 end
