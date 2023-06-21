@@ -4,16 +4,15 @@ require 'optparse'
 
 files = ARGV
 options = ARGV.getopts('lcw')
-
-def option_select_or_no_option(options, option)
+def output_count?(options, option:)
   options[option] || !options.value?(true)
 end
 
 def print_counts(counts, options, path_or_total = '')
   result = ''
-  result += counts[:line_count].to_s.rjust(8) if option_select_or_no_option(options, 'l')
-  result += counts[:word_count].to_s.rjust(8) if option_select_or_no_option(options, 'w')
-  result += counts[:byte_count].to_s.rjust(8) if option_select_or_no_option(options, 'c')
+  result += counts[:line_count].to_s.rjust(8) if output_count?(options, option: 'l')
+  result += counts[:word_count].to_s.rjust(8) if output_count?(options, option: 'w')
+  result += counts[:byte_count].to_s.rjust(8) if output_count?(options, option: 'c')
   puts result + path_or_total
 end
 
