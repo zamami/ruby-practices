@@ -15,7 +15,7 @@ class Game
       frame = Frame.new(@shots[index], @shots[index + 1])
       frame_score = calculate_frame_score(frame, index)
       frame_scores << frame_score
-      index += frame.strike? ? 1 : 2
+      index += add_index(frame)
     end
     frame_scores
   end
@@ -26,14 +26,24 @@ class Game
 
   private
 
+  def add_index(frame)
+    frame.strike? ? 1 : 2
+  end
+
+  def strike_or_spare?(frame)
+    frame.strike? || frame.spare?
+  end
+
+  def add_next_frame_score(index)
+    Frame.new(@shots[index], @shots[index + 1], @shots[index + 2]).score
+  end
+
   def calculate_frame_score(frame, index)
-    if frame.strike?
-      Frame.new(@shots[index],@shots[index + 1],@shots[index + 2]).score
-    elsif frame.spare?
-      Frame.new(@shots[index],@shots[index + 1],@shots[index + 2]).score
+    if strike_or_spare?(frame)
+      add_next_frame_score(index)
     else
-      Frame.new(@shots[index], @shots[index + 1]).score
-    end #frame.score リファクタリング
+      frame.score
+    end
   end
 
 end
