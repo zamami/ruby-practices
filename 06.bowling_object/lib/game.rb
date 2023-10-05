@@ -45,8 +45,4 @@ class Game
       frame.score
     end
   end
-
 end
-
-
-
