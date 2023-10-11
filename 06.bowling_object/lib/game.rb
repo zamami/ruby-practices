@@ -5,14 +5,19 @@ require_relative 'frame'
 class Game
   def initialize(shots)
     @shots = shots
+    @frames = []
+    index = 0
+
+    10.times do
+      @frames << Frame.new(@shots[index], @shots[index + 1])
+      index += add_index(@frames.last)
+    end
   end
 
   def frame_scores
-    index = 0
     frame_scores = []
-
-    10.times do
-      frame = Frame.new(@shots[index], @shots[index + 1])
+    index = 0
+    @frames.each do |frame|
       frame_score = calculate_frame_score(frame, index)
       frame_scores << frame_score
       index += add_index(frame)
