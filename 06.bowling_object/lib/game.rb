@@ -10,7 +10,7 @@ class Game
 
     10.times do
       @frames << Frame.new(@shots[index], @shots[index + 1])
-      index += add_index(@frames.last)
+      index += @frames.last.strike? ? 1 : 2
     end
   end
 
@@ -20,7 +20,7 @@ class Game
     @frames.each do |frame|
       frame_score = calculate_frame_score(frame, index)
       frame_scores << frame_score
-      index += add_index(frame)
+      index += frame.strike? ? 1 : 2
     end
     frame_scores
   end
@@ -30,10 +30,6 @@ class Game
   end
 
   private
-
-  def add_index(frame)
-    frame.strike? ? 1 : 2
-  end
 
   def strike_or_spare?(frame)
     frame.strike? || frame.spare?
