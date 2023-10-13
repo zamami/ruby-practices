@@ -15,14 +15,7 @@ class Game
   end
 
   def frame_scores
-    frame_scores = []
-    index = 0
-    @frames.each do |frame|
-      frame_score = frame.score
-      frame_scores << frame_score
-      index += frame.strike? ? 1 : 2
-    end
-    frame_scores
+    @frames.map(&:score)
   end
 
   def score
