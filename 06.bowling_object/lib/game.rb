@@ -5,12 +5,11 @@ require_relative 'frame'
 class Game
   def initialize(shots)
     @shots = shots
-    @frames = []
     index = 0
-
-    10.times do
-      @frames << Frame.new(@shots[index], @shots[index + 1], @shots[index + 2])
-      index += @frames.last.strike? ? 1 : 2
+    @frames = Array.new(10) do
+      frame = Frame.new(@shots[index], @shots[index + 1], @shots[index + 2])
+      index += frame.strike? ? 1 : 2
+      frame
     end
   end
 
