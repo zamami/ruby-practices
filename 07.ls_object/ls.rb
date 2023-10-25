@@ -22,6 +22,6 @@ require 'optparse'
 OPTIONS = ARGV.getopts('alr')
 args = ['*']
 args << File::FNM_DOTMATCH if OPTIONS.fetch('a', false) # -aオプションがあるのか
-file_data = OPTIONS['r'] ? Dir.glob(*args).reverse : Dir.glob(*args) # -rオプションがあるのか
+lists = OPTIONS['r'] ? Dir.glob(*args).reverse : Dir.glob(*args) # -rオプションがあるのか
 
-OPTIONS['l'] ? LsOption.new(file_data).show : LsCommand(file_data).show # -lオプションがあるのか
+OPTIONS['l'] ? LsOption.new(lists).show : LsCommand.new(lists).show # -lオプションがあるのか
