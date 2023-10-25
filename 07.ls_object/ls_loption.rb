@@ -2,7 +2,6 @@
 
 require 'etc'
 class LsLoption < LsCommand
-
   # -lオプションに対応。
   def get_ftype(ftype)
     if ftype == 'directory'
@@ -20,6 +19,7 @@ class LsLoption < LsCommand
     change_file_mode_num = get_file_mode_num.map { |num| FILE_MODE[num] }
     change_file_mode_num.join
   end
+
   def show
     stat_blocks_total = []
     lists_values = @lists.map do |list|
