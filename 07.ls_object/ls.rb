@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
+require_relative 'ls_option_parser'
 require_relative 'ls_command'
 require_relative 'ls_loption'
-require 'optparse'
 
-OPTIONS = ARGV.getopts('alr')
-args = ['*']
-args << File::FNM_DOTMATCH if OPTIONS.fetch('a', false) # -aオプションがあるのか
-lists = OPTIONS['r'] ? Dir.glob(*args).reverse : Dir.glob(*args) # -rオプションがあるのか
+option_parser = LsOptionParser.new
+file_list = option_parser.file_list
 
-OPTIONS['l'] ? LsLoption.new(lists).show : LsCommand.new(lists).show # -lオプションがあるのか
+option_parser.l_option? ? LsLoption.new(file_list).show : LsCommand.new(file_list).show
+
