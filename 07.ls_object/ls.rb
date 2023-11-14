@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
-require_relative 'ls_option_parser'
+require_relative 'ls_parser'
 require_relative 'ls_command'
-require_relative 'ls_loption'
+require_relative 'ls_long_option'
 
-option_parser = LsOptionParser.new
-file_list = option_parser.file_list
+parser = LsParser.new
+file_list = parser.file_list
 
-option_parser.l_option? ? LsLoption.new(file_list).show : LsCommand.new(file_list).show
-
+parser.l_option? ? LsLongOption.new(file_list).show : LsCommand.new(file_list).show

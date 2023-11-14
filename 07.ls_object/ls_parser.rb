@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-class LsOptionParser
-  require 'optparse'
-
+require 'optparse'
+class LsParser
   def initialize
     @options = ARGV.getopts('alr')
   end
@@ -10,7 +9,7 @@ class LsOptionParser
   def file_list
     args = ['*']
     args << File::FNM_DOTMATCH if @options['a']
-    @options['r'] ? Dir.glob(*args).reverse : Dir.glob(*args)
+    @options['r'] ? Dir.glob(*args).sort.reverse : Dir.glob(*args).sort
   end
 
   def l_option?
