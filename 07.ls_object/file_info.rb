@@ -2,8 +2,9 @@
 
 require 'etc'
 
-FILE_MODE = { '7' => 'rwx', '6' => 'rwx', '5' => 'r-x', '4' => 'r--', '3' => '-wx', '2' => '-w-', '1' => '--x', '0' => '---' }.freeze
 class FileInfo
+  FILE_MODE = { '7' => 'rwx', '6' => 'rwx', '5' => 'r-x', '4' => 'r--', '3' => '-wx', '2' => '-w-', '1' => '--x', '0' => '---' }.freeze
+
   def initialize(file_lists)
     @file_lists = file_lists
   end
@@ -35,7 +36,7 @@ class FileInfo
 
   private
 
-  def get_ftype(ftype)
+  def ftype(ftype)
     if ftype == 'directory'
       'd'
     elsif ftype == 'file'
@@ -45,7 +46,7 @@ class FileInfo
     end
   end
 
-  def get_file_mode(stat_mode)
+  def file_mode(stat_mode)
     get_file_mode_num = stat_mode.to_s(8).split('').slice(-3..-1) # 下３桁を取得。
     change_file_mode_num = get_file_mode_num.map { |num| FILE_MODE[num] }
     change_file_mode_num.join
