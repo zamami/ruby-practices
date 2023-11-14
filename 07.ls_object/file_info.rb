@@ -12,8 +12,8 @@ class FileInfo
   def show
     @file_lists.map do |list|
       stat = File.lstat(list) # ディレクトリの中の要素をfile::lstatに通す
-      ftype = get_ftype(stat.ftype) # ファイルタイプを取得
-      file_mode = get_file_mode(stat.mode) # 下３桁を定義してjoinでくっつける
+      ftype = ftype(stat.ftype) # ファイルタイプを取得
+      file_mode = file_mode(stat.mode) # 下３桁を定義してjoinでくっつける
       file_type_mode = "#{ftype}#{file_mode}  " # ファイルタイプとファイルモードを一つにする
       file_nlink = stat.nlink.to_s # リンク数を取得
       owner_name = "#{Etc.getpwuid(stat.uid).name} " # オーナー名を取得
