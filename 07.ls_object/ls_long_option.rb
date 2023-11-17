@@ -4,11 +4,11 @@ require_relative 'ls_file_info'
 class LsLongOption
   def initialize(file_list)
     @file_list = file_list
-    @long_option = LsFileInfo.new(file_list) # 依存オブジェクトの注入
+    @file_list_info = LsFileInfo.new(file_list)
   end
 
   def show
-    puts "total #{@long_option.stat_blocks_total}"
-    @long_option.show
+    puts "total #{@file_list_info.stat_blocks_total}"
+    @file_list_info.show
   end
 end
