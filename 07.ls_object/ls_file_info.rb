@@ -21,17 +21,14 @@ class LsFileInfo
       file_size = stat.size.to_s.rjust(5) # ファイルサイズを取得
       file_time = stat.atime.strftime('%_b %_d %R') # ファイルの作成時刻を取得
       file_path = "-> #{File.readlink(filename)}" if stat.symlink? # シンボリックファイルのリンク先を取得
-      puts [file_type_mode, file_nlink, owner_name, group_name, file_size, file_time, list, file_path].join(' ')
+      puts [file_type_mode, file_nlink, owner_name, group_name, file_size, file_time, filename, file_path].join(' ')
     end
   end
 
   def stat_blocks_total
-    stat_blocks = []
-    @file_list.map do |list|
-      stat = File.lstat(list)
-      stat_blocks << stat.blocks # ブロックサイズを取得
+    @file_list.sum do |filename|
+      File.lstat(filename).blocks
     end
-    stat_blocks.flatten.sum
   end
 
   private
