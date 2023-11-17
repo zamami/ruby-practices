@@ -9,7 +9,7 @@ class LsFileInfo
     @file_list = file_list
   end
 
-  def show
+  def filename_info
     @file_list.map do |filename|
       stat = File.lstat(filename) # ディレクトリの中の要素をfile::lstatに通す
       ftype = ftype(stat.ftype) # ファイルタイプを取得
@@ -21,7 +21,7 @@ class LsFileInfo
       file_size = stat.size.to_s.rjust(5) # ファイルサイズを取得
       file_time = stat.atime.strftime('%_b %_d %R') # ファイルの作成時刻を取得
       file_path = "-> #{File.readlink(filename)}" if stat.symlink? # シンボリックファイルのリンク先を取得
-      puts [file_type_mode, file_nlink, owner_name, group_name, file_size, file_time, filename, file_path].join(' ')
+      [file_type_mode, file_nlink, owner_name, group_name, file_size, file_time, filename, file_path].join(' ')
     end
   end
 
