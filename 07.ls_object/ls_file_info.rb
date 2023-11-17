@@ -10,8 +10,8 @@ class LsFileInfo
   end
 
   def show
-    @file_list.map do |list|
-      stat = File.lstat(list) # ディレクトリの中の要素をfile::lstatに通す
+    @file_list.map do |filename|
+      stat = File.lstat(filename) # ディレクトリの中の要素をfile::lstatに通す
       ftype = ftype(stat.ftype) # ファイルタイプを取得
       file_mode = file_mode(stat.mode) # 下３桁を定義してjoinでくっつける
       file_type_mode = "#{ftype}#{file_mode}  " # ファイルタイプとファイルモードを一つにする
@@ -20,7 +20,7 @@ class LsFileInfo
       group_name = Etc.getgrgid(stat.gid).name # グループ名を取得
       file_size = stat.size.to_s.rjust(5) # ファイルサイズを取得
       file_time = stat.atime.strftime('%_b %_d %R') # ファイルの作成時刻を取得
-      file_path = "-> #{File.readlink(list)}" if stat.symlink? # シンボリックファイルのリンク先を取得
+      file_path = "-> #{File.readlink(filename)}" if stat.symlink? # シンボリックファイルのリンク先を取得
       puts [file_type_mode, file_nlink, owner_name, group_name, file_size, file_time, list, file_path].join(' ')
     end
   end
