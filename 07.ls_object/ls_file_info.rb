@@ -2,15 +2,15 @@
 
 require 'etc'
 
-class FileInfo
+class LsFileInfo
   FILE_MODE = { '7' => 'rwx', '6' => 'rwx', '5' => 'r-x', '4' => 'r--', '3' => '-wx', '2' => '-w-', '1' => '--x', '0' => '---' }.freeze
 
-  def initialize(file_lists)
-    @file_lists = file_lists
+  def initialize(file_list)
+    @file_list = file_list
   end
 
   def show
-    @file_lists.map do |list|
+    @file_list.map do |list|
       stat = File.lstat(list) # ディレクトリの中の要素をfile::lstatに通す
       ftype = ftype(stat.ftype) # ファイルタイプを取得
       file_mode = file_mode(stat.mode) # 下３桁を定義してjoinでくっつける
@@ -27,7 +27,7 @@ class FileInfo
 
   def stat_blocks_total
     stat_blocks = []
-    @file_lists.map do |list|
+    @file_list.map do |list|
       stat = File.lstat(list)
       stat_blocks << stat.blocks # ブロックサイズを取得
     end
