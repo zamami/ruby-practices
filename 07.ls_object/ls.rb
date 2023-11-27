@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require_relative 'ls_parser'
-require_relative 'ls_command'
-require_relative 'ls_long_option'
+require_relative 'ls_normal_format'
+require_relative 'ls_long_format'
 
 parser = LsParser.new
 file_list = parser.file_list
 
-parser.l_option? ? LsLongOption.new(file_list).show : LsCommand.new(file_list).show
+parser.l_option? ? LsLongFormat.new(file_list).show : LsLongFormat.new(file_list).show

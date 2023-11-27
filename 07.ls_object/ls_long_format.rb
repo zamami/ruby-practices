@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'ls_file_info'
-class LsLongOption
+class LsLongFormat
   def initialize(file_list)
     @file_list = file_list
     @file_list_info = LsFileInfo.new(file_list)

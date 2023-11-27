@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class LsCommand
+class LsNormalFormat
   def initialize(list)
     @list = list
   end
