@@ -13,7 +13,7 @@ class LsFileInfo
     @filenames.map do |filename|
       stat = File.lstat(filename) # ディレクトリの中の要素をfile::lstatに通す
       filename_type = filename_type(stat.ftype) # ファイルタイプを取得
-      filename_mode = filename_mode(stat.mode) # 下３桁を定義してjoinでくっつける
+      filename_mode = filename_permission_string(stat.mode) # 下３桁を定義してjoinでくっつける
       filename_type_mode = "#{filename_type}#{filename_mode}  " # ファイルタイプとファイルモードを一つにする
       filename_nlink = stat.nlink.to_s # リンク数を取得
       owner_name = "#{Etc.getpwuid(stat.uid).name} " # オーナー名を取得
@@ -43,8 +43,8 @@ class LsFileInfo
     end
   end
 
-  def filename_mode(stat_mode)
-    filename_mode_num = stat_mode.to_s(8).split('').slice(-3..-1) # 下３桁を取得。
+  def filename_permission_string(mode)
+    filename_mode_num = mode.to_s(8).split('').slice(-3..-1) # 下３桁を取得。
     change_filename_mode_num = filename_mode_num.map { |num| FILE_MODE[num] }
     change_filename_mode_num.join
   end

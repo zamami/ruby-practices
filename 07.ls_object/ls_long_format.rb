@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'ls_file_info'
+
 class LsLongFormat
   def initialize(filenames)
     @filenames = filenames
