@@ -5,47 +5,47 @@ require 'etc'
 class LsFileInfo
   FILE_MODE = { '7' => 'rwx', '6' => 'rwx', '5' => 'r-x', '4' => 'r--', '3' => '-wx', '2' => '-w-', '1' => '--x', '0' => '---' }.freeze
 
-  def initialize(file_list)
-    @file_list = file_list
+  def initialize(filenames)
+    @filenames = filenames
   end
 
   def filename_info
-    @file_list.map do |filename|
+    @filenames.map do |filename|
       stat = File.lstat(filename) # ディレクトリの中の要素をfile::lstatに通す
-      ftype = ftype(stat.ftype) # ファイルタイプを取得
-      file_mode = file_mode(stat.mode) # 下３桁を定義してjoinでくっつける
-      file_type_mode = "#{ftype}#{file_mode}  " # ファイルタイプとファイルモードを一つにする
-      file_nlink = stat.nlink.to_s # リンク数を取得
+      filename_type = filename_type(stat.ftype) # ファイルタイプを取得
+      filename_mode = filename_mode(stat.mode) # 下３桁を定義してjoinでくっつける
+      filename_type_mode = "#{filename_type}#{filename_mode}  " # ファイルタイプとファイルモードを一つにする
+      filename_nlink = stat.nlink.to_s # リンク数を取得
       owner_name = "#{Etc.getpwuid(stat.uid).name} " # オーナー名を取得
       group_name = Etc.getgrgid(stat.gid).name # グループ名を取得
-      file_size = stat.size.to_s.rjust(5) # ファイルサイズを取得
-      file_time = stat.atime.strftime('%_b %_d %R') # ファイルの作成時刻を取得
-      file_path = "-> #{File.readlink(filename)}" if stat.symlink? # シンボリックファイルのリンク先を取得
-      [file_type_mode, file_nlink, owner_name, group_name, file_size, file_time, filename, file_path].join(' ')
+      filename_size = stat.size.to_s.rjust(5) # ファイルサイズを取得
+      filename_time = stat.atime.strftime('%_b %_d %R') # ファイルの作成時刻を取得
+      filename_path = "-> #{File.readlink(filename)}" if stat.symlink? # シンボリックファイルのリンク先を取得
+      [filename_type_mode, filename_nlink, owner_name, group_name, filename_size, filename_time, filename, filename_path].join(' ')
     end
   end
 
   def stat_blocks_total
-    @file_list.sum do |filename|
+    @filenames.sum do |filename|
       File.lstat(filename).blocks
     end
   end
 
   private
 
-  def ftype(ftype)
-    if ftype == 'directory'
+  def filename_type(type)
+    if type == 'directory'
       'd'
-    elsif ftype == 'file'
+    elsif type == 'file'
       '-'
     else
       'l'
     end
   end
 
-  def file_mode(stat_mode)
-    get_file_mode_num = stat_mode.to_s(8).split('').slice(-3..-1) # 下３桁を取得。
-    change_file_mode_num = get_file_mode_num.map { |num| FILE_MODE[num] }
-    change_file_mode_num.join
+  def filename_mode(stat_mode)
+    filename_mode_num = stat_mode.to_s(8).split('').slice(-3..-1) # 下３桁を取得。
+    change_filename_mode_num = filename_mode_num.map { |num| FILE_MODE[num] }
+    change_filename_mode_num.join
   end
 end

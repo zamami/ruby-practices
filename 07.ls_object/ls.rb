@@ -5,6 +5,5 @@ require_relative 'ls_normal_format'
 require_relative 'ls_long_format'
 
 parser = LsParser.new
-file_list = parser.file_list
-
-parser.l_option? ? LsLongFormat.new(file_list).show : LsLongFormat.new(file_list).show
+filenames = parser.filenames
+parser.l_option? ? LsLongFormat.new(filenames).show : LsNormalFormat.new(filenames).show
