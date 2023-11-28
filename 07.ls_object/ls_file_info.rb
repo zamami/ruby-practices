@@ -9,7 +9,7 @@ class LsFileInfo
     @filenames = filenames
   end
 
-  def filename_info
+  def format_filenames
     @filenames.map do |filename|
       stat = File.lstat(filename) # ディレクトリの中の要素をfile::lstatに通す
       filename_type = filename_type(stat.ftype) # ファイルタイプを取得
