@@ -5,23 +5,23 @@ require_relative 'ls_file_info'
 class LsLongFormat
   def initialize(filenames)
     @filenames = filenames
-    @filenames_info = LsFileInfo.new(filenames)
+    @ls_file_info = LsFileInfo.new(filenames)
   end
 
   def show
-    stat_blocks_total
-    filenames_info
+    print_stat_blocks_total
+    print_filenames
   end
 
   private
 
-  def stat_blocks_total
-    puts "total #{@filenames_info.stat_blocks_total}"
+  def print_stat_blocks_total
+    puts "total #{@ls_file_info.stat_blocks_total}"
   end
 
-  def filenames_info
-    filenames_info = @filenames_info.filename_info
-    filenames_info.each do |filename|
+  def print_filenames
+    filenames = @ls_file_info.format_filenames
+    filenames.each do |filename|
       p filename
     end
   end
