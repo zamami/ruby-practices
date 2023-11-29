@@ -8,9 +8,9 @@ class LsParser
   end
 
   def format_filenames
-    filenames = ['*']
-    filenames << File::FNM_DOTMATCH if @options['a']
-    @options['r'] ? Dir.glob(*filenames).sort.reverse : Dir.glob(*filenames).sort
+    args = ['*']
+    args << File::FNM_DOTMATCH if @options['a']
+    @options['r'] ? Dir.glob(*args).sort.reverse : Dir.glob(*args).sort
   end
 
   def l_option?
